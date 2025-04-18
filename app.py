@@ -1,8 +1,8 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-import requests
 from streamlit_lottie import st_lottie
+import requests
 
 st.set_page_config(layout="wide", page_title="Shopify-Style BI Dashboard")
 st.set_option('client.showErrorDetails', True)
@@ -49,6 +49,16 @@ if uploaded_file:
     st.markdown("## 🚀 Key Metrics")
     col1, col2, col3 = st.columns(3)
 
+    #VC Debug
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.write("Column 1")
+    with col2:
+        st.write("Column 2")
+    with col3:
+        st.write("Column 3")
+    #VC
+    
     with col1:
         if icon_customer:
             st_lottie(icon_customer, height=60, key="customer")
