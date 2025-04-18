@@ -5,13 +5,14 @@ import requests
 from streamlit_lottie import st_lottie
 
 st.set_page_config(layout="wide", page_title="Shopify-Style BI Dashboard")
+st.set_option('client.showErrorDetails', True)
 st.title("📈 Shopify-Style Business Intelligence Dashboard")
 
 # File uploader
 uploaded_file = st.file_uploader("Upload Excel File", type=["xlsx"])
 if uploaded_file:
     xls = pd.ExcelFile(uploaded_file)
-    df = xls.parse("Sample Data")
+    df = xls.parse(xls.sheet_names[0])
     df.columns = df.columns.str.strip()  # clean column names
 
     # Filters
@@ -48,54 +49,61 @@ if uploaded_file:
     with col1:
         st_lottie(icon_customer, height=60, key="customer")
         st.markdown("### 👥 Top Customer")
-        top_customers = df_filtered["Customer"].value_counts().head(5)
-        st.markdown(f"""
-            <div style='padding: 10px; background: linear-gradient(to right, #e0f7fa, #80deea); border-radius: 12px;'>
-                <h4 style='margin-bottom: 5px;'>{top_customers.index[0]}</h4>
-                <p style='color: gray;'>{top_customers.iloc[0]} orders</p>
-            </div>
-        """, unsafe_allow_html=True)
+        if "Company Org. Name" in df_filtered.columns:
+            top_customers = df_filtered["Company Org. Name"].value_counts().head(5)
+            if not top_customers.empty:
+                st.markdown(f"""
+                    <div style='padding: 10px; background: linear-gradient(to right, #e0f7fa, #80deea); border-radius: 12px;'>
+                        <h4 style='margin-bottom: 5px;'>{top_customers.index[0]}</h4>
+                        <p style='color: gray;'>{top_customers.iloc[0]} orders</p>
+                    </div>
+                """, unsafe_allow_html=True)
 
     with col2:
         st_lottie(icon_city, height=60, key="city")
         st.markdown("### 🏙️ Top City")
-        top_cities = df_filtered["City"].value_counts().head(5)
-        st.markdown(f"""
-            <div style='padding: 10px; background: linear-gradient(to right, #fce4ec, #f8bbd0); border-radius: 12px;'>
-                <h4 style='margin-bottom: 5px;'>{top_cities.index[0]}</h4>
-                <p style='color: gray;'>{top_cities.iloc[0]} orders</p>
-            </div>
-        """, unsafe_allow_html=True)
+        if "City" in df_filtered.columns:
+            top_cities = df_filtered["City"].value_counts().head(5)
+            if not top_cities.empty:
+                st.markdown(f"""
+                    <div style='padding: 10px; background: linear-gradient(to right, #fce4ec, #f8bbd0); border-radius: 12px;'>
+                        <h4 style='margin-bottom: 5px;'>{top_cities.index[0]}</h4>
+                        <p style='color: gray;'>{top_cities.iloc[0]} orders</p>
+                    </div>
+                """, unsafe_allow_html=True)
 
     with col3:
         st_lottie(icon_variant, height=60, key="variant")
         st.markdown("### 🛒 Top Variant")
         variant_col = "Variant" if "Variant" in df_filtered.columns else "Property"
-        top_variants = df_filtered[variant_col].value_counts().head(5)
-        st.markdown(f"""
-            <div style='padding: 10px; background: linear-gradient(to right, #e8f5e9, #a5d6a7); border-radius: 12px;'>
-                <h4 style='margin-bottom: 5px;'>{top_variants.index[0]}</h4>
-                <p style='color: gray;'>{top_variants.iloc[0]} sold</p>
-            </div>
-        """, unsafe_allow_html=True)
+        if variant_col in df_filtered.columns:
+            top_variants = df_filtered[variant_col].value_counts().head(5)
+            if not top_variants.empty:
+                st.markdown(f"""
+                    <div style='padding: 10px; background: linear-gradient(to right, #e8f5e9, #a5d6a7); border-radius: 12px;'>
+                        <h4 style='margin-bottom: 5px;'>{top_variants.index[0]}</h4>
+                        <p style='color: gray;'>{top_variants.iloc[0]} sold</p>
+                    </div>
+                """, unsafe_allow_html=True)
 
     # --- CHARTS ---
     st.markdown("## 📊 Data Visualizations")
 
-    # Revenue by City
-    st.markdown("#### 💰 Revenue by City")
-    rev_city = df_filtered.groupby("City")["Revenue"].sum().sort_values(ascending=False)
-    st.bar_chart(rev_city)
+    if "Revenue" in df_filtered.columns:
+        st.markdown("#### 💰 Revenue by City")
+        rev_city = df_filtered.groupby("City")["Revenue"].sum().sort_values(ascending=False)
+        st.bar_chart(rev_city)
 
-    # Contact Status
-    st.markdown("#### 📞 Leads by Contact Status")
-    status_counts = df_filtered["Contact Status"].value_counts().sort_values(ascending=False)
-    st.bar_chart(status_counts)
+        st.markdown("#### 📅 Revenue Trend (by Month)")
+        rev_trend = df_filtered.groupby("Month")["Revenue"].sum().sort_values(ascending=False)
+        st.bar_chart(rev_trend)
+    else:
+        st.warning("⚠️ 'Revenue' column not found.")
 
-    # Revenue Trend by Month
-    st.markdown("#### 📅 Revenue Trend (by Month)")
-    rev_trend = df_filtered.groupby("Month")["Revenue"].sum().sort_values(ascending=False)
-    st.bar_chart(rev_trend)
+    if "Contact Status" in df_filtered.columns:
+        st.markdown("#### 📞 Leads by Contact Status")
+        status_counts = df_filtered["Contact Status"].value_counts().sort_values(ascending=False)
+        st.bar_chart(status_counts)
 
     # Download filtered data
     st.markdown("---")
