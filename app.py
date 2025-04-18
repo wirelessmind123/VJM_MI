@@ -107,7 +107,7 @@ if uploaded_file:
 
     if "Revenue" in df_filtered.columns:
         st.markdown("#### 💰 Revenue by City")
-        rev_city = df_filtered.groupby("City")["Revenue"].sum().sort_values(ascending=False)
+        rev_city = df_filtered.groupby("City")["Revenue"].sum().sort_values(ascending=True)
         st.bar_chart(rev_city)
 
         st.markdown("#### 📅 Revenue Trend (by Month)")
