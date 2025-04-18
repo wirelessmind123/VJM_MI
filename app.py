@@ -107,7 +107,7 @@ if uploaded_file:
 
     if "Revenue" in df_filtered.columns:
         st.markdown("#### 💰 Revenue by City")
-        rev_city = df_filtered.groupby("City")["Revenue"].sum().sort_values(ascending=True)
+        rev_city = df_filtered.groupby("City")["Revenue"].sum().sort_values(ascending=False)
         st.bar_chart(rev_city)
 
         st.markdown("#### 📅 Revenue Trend (by Month)")
@@ -118,7 +118,7 @@ if uploaded_file:
 
     if "Contact Status" in df_filtered.columns:
         st.markdown("#### 📞 Leads by Contact Status")
-        status_counts = df_filtered["Contact Status"].value_counts().sort_values(ascending=False)
+        status_counts = df_filtered["Contact Status"].value_counts()
         st.bar_chart(status_counts)
 
     # Download filtered data
