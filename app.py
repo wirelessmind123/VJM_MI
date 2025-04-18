@@ -8,12 +8,15 @@ st.title("📊 Business Intelligence Dashboard")
 st.markdown("Upload the Excel file to explore insights and visualizations.")
 
 uploaded_file = st.file_uploader("Upload Excel File", type=["xlsx"])
+st.write("Columns detected:", df.columns.tolist())
 
 if uploaded_file:
     xls = pd.ExcelFile(uploaded_file)
     if "Sample Data" in xls.sheet_names:
         df = xls.parse("Sample Data")
-
+        
+        df.columns = df.columns.str.strip()  # remove extra spaces
+        
         st.subheader("🔍 Data Preview")
         st.dataframe(df.head())
 
