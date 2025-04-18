@@ -4,16 +4,17 @@ import matplotlib.pyplot as plt
 
 st.set_page_config(page_title="BI Dashboard", layout="wide")
 
-st.title("📊 Business Intelligence Dashboard")
+st.title("📊 VJM MI Dashboard")
 st.markdown("Upload the Excel file to explore insights and visualizations.")
 
 uploaded_file = st.file_uploader("Upload Excel File", type=["xlsx"])
-st.write("Columns detected:", df.columns.tolist())
 
 if uploaded_file:
     xls = pd.ExcelFile(uploaded_file)
     if "Sample Data" in xls.sheet_names:
         df = xls.parse("Sample Data")
+        
+        st.write("Columns detected:", df.columns.tolist())
         
         df.columns = df.columns.str.strip()  # remove extra spaces
         
