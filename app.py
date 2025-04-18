@@ -42,6 +42,25 @@ if uploaded_file:
         if year:
             df_filtered = df_filtered[df_filtered["Year"].isin(year)]
 
+        st.subheader("🚀 Key Metrics (Top 5)")
+        col1, col2, col3 = st.columns(3)
+        
+        # Top 5 Customers
+        if "Customer" in df_filtered.columns:
+            top_customers = df_filtered["Customer"].value_counts().head(5)
+            col1.metric("Top Customer", top_customers.index[0], f"{top_customers.iloc[0]} orders")
+        
+        # Top 5 Cities
+        if "City" in df_filtered.columns:
+            top_cities = df_filtered["City"].value_counts().head(5)
+            col2.metric("Top City", top_cities.index[0], f"{top_cities.iloc[0]} orders")
+        
+        # Top 5 Variants (or use "Property")
+        variant_col = "Variant" if "Variant" in df_filtered.columns else "Property"
+        if variant_col in df_filtered.columns:
+            top_variants = df_filtered[variant_col].value_counts().head(5)
+            col3.metric("Top Variant", top_variants.index[0], f"{top_variants.iloc[0]} sold")
+        
         st.subheader("📈 Visualizations")
 
         # Revenue by City
@@ -53,12 +72,12 @@ if uploaded_file:
         # Revenue by Month
         st.markdown("### Revenue by Month")
         if not df_filtered["Revenue"].isnull().all():
-            rev_month = df_filtered.groupby("Month")["Revenue"].sum()
+            rev_month = df_filtered.groupby("Month")["Revenue"].sum().sort_values(ascending=False)
             st.line_chart(rev_month)
 
         # Contact Status Distribution
         st.markdown("### Contact Status Distribution")
-        status_counts = df_filtered["Contact Status"].value_counts()
+        status_counts = df_filtered["Contact Status"].value_counts().sort_values(ascending=False)
         st.bar_chart(status_counts)
 
         # Property Distribution Pie Chart
