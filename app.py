@@ -33,10 +33,13 @@ if uploaded_file:
 
     # --- LOTTIE ICONS ---
     def load_lottieurl(url):
-        r = requests.get(url)
-        if r.status_code != 200:
+        try:
+            r = requests.get(url)
+            if r.status_code != 200:
+                return None
+            return r.json()
+        except:
             return None
-        return r.json()
 
     icon_customer = load_lottieurl("https://assets7.lottiefiles.com/packages/lf20_jzszqf7u.json")
     icon_city = load_lottieurl("https://assets7.lottiefiles.com/packages/lf20_ukb6onbi.json")
@@ -47,7 +50,8 @@ if uploaded_file:
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        st_lottie(icon_customer, height=60, key="customer")
+        if icon_customer:
+            st_lottie(icon_customer, height=60, key="customer")
         st.markdown("### 👥 Top Customer")
         if "Company Org. Name" in df_filtered.columns:
             top_customers = df_filtered["Company Org. Name"].value_counts().head(5)
@@ -60,7 +64,8 @@ if uploaded_file:
                 """, unsafe_allow_html=True)
 
     with col2:
-        st_lottie(icon_city, height=60, key="city")
+        if icon_city:
+            st_lottie(icon_city, height=60, key="city")
         st.markdown("### 🏙️ Top City")
         if "City" in df_filtered.columns:
             top_cities = df_filtered["City"].value_counts().head(5)
@@ -73,7 +78,8 @@ if uploaded_file:
                 """, unsafe_allow_html=True)
 
     with col3:
-        st_lottie(icon_variant, height=60, key="variant")
+        if icon_variant:
+            st_lottie(icon_variant, height=60, key="variant")
         st.markdown("### 🛒 Top Variant")
         variant_col = "Variant" if "Variant" in df_filtered.columns else "Property"
         if variant_col in df_filtered.columns:
